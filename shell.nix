@@ -24,6 +24,10 @@ pkgs.mkShell {
     uv
     cmake
     stdenv.cc.cc.lib
+
+    # for mettascope
+    nodejs_24
+    typescript
   ];
 
   # TODO having issues with `uv sync` failing on a cmake step
@@ -34,11 +38,13 @@ pkgs.mkShell {
     # Clear PYTHONPATH to avoid conflicts
     export PYTHONPATH=""
 
-    # Create and activate a virtual environment with uv
-    uv venv
-    source .venv/bin/activate
-
+    # make cmake work
     export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
+
+    # Create and activate a virtual environment with uv
+    # uv sync
+    # source .venv/bin/activate
+
 
     echo "Python version: $(python --version)"
     echo "uv version: $(uv --version)"
