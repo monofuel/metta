@@ -285,9 +285,9 @@ class PufferTrainer:
             ):
                 self._update_l2_init_weight_copy()
 
-            if self.trainer_cfg.replay_interval != 0 and self.epoch % self.trainer_cfg.replay_interval == 0:
-                with self.timer("_generate_and_upload_replay", log=logging.INFO):
-                    self._generate_and_upload_replay()
+            # if self.trainer_cfg.replay_interval != 0 and self.epoch % self.trainer_cfg.replay_interval == 0:
+            #     with self.timer("_generate_and_upload_replay", log=logging.INFO):
+            #         self._generate_and_upload_replay()
 
             self._on_train_step()
 
