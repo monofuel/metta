@@ -30,7 +30,6 @@ pkgs.mkShell {
     typescript
   ];
 
-  # TODO having issues with `uv sync` failing on a cmake step
   shellHook = ''
     # Prevent uv from downloading its own Python
     export UV_PYTHON="${myPython}/bin/python3.11"
