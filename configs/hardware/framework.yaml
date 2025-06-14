@@ -1,9 +1,8 @@
 # @package __global__
 
 device: cuda
-vectorization: multiprocessing
+vectorization: serial
 trainer:
   num_workers: 8 # num cores
-  async_factor: 2
-  zero_copy: True
+  async_factor: 1
   checkpoint_interval: 300
