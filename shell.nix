@@ -19,10 +19,11 @@ pkgs.mkShell {
   name = "metta-dev";
 
   buildInputs = with pkgs; [
-    # python311 # currently 3.11.12
-    myPython # 3.11.7
+    python311 # currently 3.11.12
+    #myPython # 3.11.7
     uv
     cmake
+    zstd
     stdenv.cc.cc.lib
 
     # for mettascope
@@ -30,15 +31,22 @@ pkgs.mkShell {
     typescript
   ];
 
+
+# Currently stuck on an error, probably some nvidia specific thing that isn't matching up on amd:
+# Error in call to target 'metta.rl.pufferlib.trainer.PufferTrainer':
+# AcceleratorError('HIP error: invalid device function\nHIP kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing AMD_SERIALIZE_KERNEL=3\nCompile with `TORCH_USE_HIP_DSA` to enable device-side assertions.\n')
+# full_key: trainer
+
   shellHook = ''
     # Prevent uv from downloading its own Python
-    export UV_PYTHON="${myPython}/bin/python3.11"
+    # export UV_PYTHON="${myPython}/bin/python3.11"
 
     # Clear PYTHONPATH to avoid conflicts
-    export PYTHONPATH=""
+    # export PYTHONPATH=""
 
     # make cmake work
     export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH=${pkgs.zstd.out}/lib:$LD_LIBRARY_PATH
 
     # Create and activate a virtual environment with uv
     # uv sync
@@ -48,5 +56,6 @@ pkgs.mkShell {
     echo "Python version: $(python --version)"
     echo "uv version: $(uv --version)"
     echo "Run 'uv sync' to install project dependencies."
+    echo "Run source .venv/bin/activate after uv sync" 
   '';
 }

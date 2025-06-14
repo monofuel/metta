@@ -7,7 +7,7 @@ name = "metta"
 version = "0.1"
 description = "Metta AI framework"
 readme = "README.md"
-requires-python = "==3.11.7"
+requires-python = "==3.11.12"
 license = "MIT"
 dependencies = [
     "boto3>=1.38.32",
@@ -82,7 +82,17 @@ python_functions = ["test_*"]
 python_classes = ["Test*"]
 filterwarnings = ["ignore::DeprecationWarning:wandb.analytics.sentry"]
 
+[[tool.uv.index]]
+# include rocm index so it can find other packages
+name = "pytorch"
+url = "https://download.pytorch.org/whl/nightly/rocm6.4"
+
 [tool.uv]
+# use specific torch rocm
+dependencies = [
+    "torch @ https://download.pytorch.org/whl/nightly/rocm6.3/torch-2.8.0.dev20250613%2Brocm6.3-cp311-cp311-manylinux_2_28_x86_64.whl",
+]
+
 cache-keys = [
     { file = "pyproject.toml" },
     { file = "CMakeLists.txt" },
