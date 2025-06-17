@@ -20,7 +20,8 @@ pkgs.mkShell {
     mettaPython
     uv
     cmake
-    stdenv.cc.cc.lib
+    gcc13
+    #stdenv.cc.cc.lib
 
     # for mettascope
     nodejs_24
@@ -28,13 +29,17 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
+    export CC=${pkgs.gcc13}/bin/gcc
+    export CXX=${pkgs.gcc13}/bin/g++
+    export PATH=${pkgs.gcc13}/bin:$PATH
+
     # Prevent uv from downloading its own Python
     export UV_PYTHON="${mettaPython}/bin/python3.11"
     # Clear PYTHONPATH to avoid conflicts
     export PYTHONPATH=""
 
     # set LD_LIBRARY_PATH for cmake to run properly during uv sync
-    export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="${pkgs.gcc13.cc.lib}/lib:$LD_LIBRARY_PATH"
 
     # Create and activate a virtual environment with uv
     uv sync
