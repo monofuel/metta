@@ -20,8 +20,10 @@ pkgs.mkShell {
     mettaPython
     uv
     cmake
+    
+    # specific cuda + gcc for pytorch
     gcc13
-    #stdenv.cc.cc.lib
+    cudaPackages.cuda_nvcc
 
     # for mettascope
     nodejs_24
