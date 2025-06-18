@@ -1,0 +1,40 @@
+{
+    "flake-compat": {
+        "branch": "master",
+        "description": null,
+        "homepage": null,
+        "owner": "edolstra",
+        "repo": "flake-compat",
+        "rev": "9100a0f413b0c601e0533d1d94ffd501ce2e7885",
+        "sha256": "09m84vsz1py50giyfpx0fpc7a4i0r1xsb54dh0dpdg308lp4p188",
+        "type": "tarball",
+        "url": "https://github.com/edolstra/flake-compat/archive/9100a0f413b0c601e0533d1d94ffd501ce2e7885.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "version": "v1.1.0"
+    },
+    "nixpkgs": {
+        "branch": "nixos-24.11",
+        "description": "Nix Packages collection",
+        "homepage": null,
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "daa45f10955cc2207ac9c5f0206774d2f757c162",
+        "sha256": "0qmlr28ind35bqyswa8hagx7hx09k04s1dzxa4nllvwvi5r9yh9c",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/daa45f10955cc2207ac9c5f0206774d2f757c162.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs-python": {
+        "branch": "main",
+        "description": "All Python versions, kept up-to-date on hourly basis using Nix.",
+        "homepage": "",
+        "owner": "cachix",
+        "repo": "nixpkgs-python",
+        "rev": "908dbb466af5955ea479ac95953333fd64387216",
+        "sha256": "12pdyv8pf99jdp7aw7x1qgd6ralg1j6dd6k79cr1xbfmb2fz10lj",
+        "type": "tarball",
+        "url": "https://github.com/cachix/nixpkgs-python/archive/908dbb466af5955ea479ac95953333fd64387216.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "version": "1.0.0"
+    }
+}
