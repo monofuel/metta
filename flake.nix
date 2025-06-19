@@ -22,7 +22,7 @@
           ];
         };
       };
-      mettaPython = nixpkgs-python.packages.${system}."3.11.7";
+      mettaPython = nixpkgs-python.packages.${system}."3.11.12";
     in
     {
       devShells.${system}.default = pkgs.mkShell {
@@ -42,6 +42,9 @@
           export UV_PYTHON="${mettaPython}/bin/python3.11"
           # Clear PYTHONPATH to avoid conflicts
           export PYTHONPATH=""
+
+          # Pytorch gets unhappy with my radeon pro w7500 or radeon 780m
+          export HSA_OVERRIDE_GFX_VERSION=11.0.0
 
           # Set LD_LIBRARY_PATH for cmake to run properly during uv sync
           export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
