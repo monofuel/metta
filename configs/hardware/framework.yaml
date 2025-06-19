@@ -1,9 +1,8 @@
 # @package __global__
 
 # Frameowrk laptop w/ radeon 780m
-# (testing things, might just be better to use cpu?)
 
-device: cuda
+device: cpu
 vectorization: serial
 trainer:
   num_workers: 8 # num cores
