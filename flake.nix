@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-python.url = "github:cachix/nixpkgs-python";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   nixConfig = {
@@ -15,10 +16,14 @@
     ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-python, ... }:
+  outputs = { self, nixpkgs, nixpkgs-python, nixpkgs-unstable, ... }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+      pkgs-unstable = import nixpkgs-unstable {
         inherit system;
         config.allowUnfree = true;
       };
@@ -30,8 +35,9 @@
 
         buildInputs = with pkgs; [
           mettaPython
-          uv
+          pkgs-unstable.uv # had issues with torch/rocm failing to extract on older uv
           cmake
+          zstd
           stdenv.cc.cc.lib
           nodejs_22
           typescript
@@ -48,9 +54,10 @@
 
           # Set LD_LIBRARY_PATH for cmake to run properly during uv sync
           export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH=${pkgs.zstd.out}/lib:$LD_LIBRARY_PATH
 
           # Create and activate a virtual environment with uv
-          uv sync
+          uv sync --index-strategy unsafe-best-match
           source .venv/bin/activate
 
           # Build frontend
