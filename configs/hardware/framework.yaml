@@ -2,7 +2,7 @@
 
 # Frameowrk laptop w/ radeon 780m
 
-device: cpu
+device: cuda
 vectorization: serial
 trainer:
   num_workers: 8 # num cores
