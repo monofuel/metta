@@ -1,0 +1,10 @@
+# @package __global__
+
+# desktop w/ 7950x + 7900 xtx
+
+device: cuda
+vectorization: multiprocessing
+trainer:
+  num_workers: 16 # num cores
+  async_factor: 2
+  checkpoint_interval: 10

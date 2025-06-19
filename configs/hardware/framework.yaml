@@ -1,8 +1,11 @@
 # @package __global__
 
+# Frameowrk laptop w/ radeon 780m
+# (testing things, might just be better to use cpu?)
+
 device: cuda
 vectorization: serial
 trainer:
   num_workers: 8 # num cores
   async_factor: 1
-  checkpoint_interval: 300
+  checkpoint_interval: 10
