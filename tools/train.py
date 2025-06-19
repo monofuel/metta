@@ -60,7 +60,7 @@ def train(cfg, wandb_run, logger: Logger):
 @record
 @hydra.main(config_path="../configs", config_name="train_job", version_base=None)
 def main(cfg: ListConfig | DictConfig) -> int:
-    setup_metta_environment(cfg)
+    setup_metta_environment(cfg, False)
     setup_mettagrid_environment(cfg)
 
     hb_file = os.environ.get("HEARTBEAT_FILE")
