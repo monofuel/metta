@@ -5,7 +5,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from metta.map.scene import make_scene
 from metta.map.types import MapGrid
-from mettagrid.level_builder import Level, LevelBuilder
+from metta.mettagrid.level_builder import Level, LevelBuilder
 
 from .types import SceneCfg
 
@@ -16,7 +16,9 @@ class MapGen(LevelBuilder):
     width: int
     height: int
     root: SceneCfg
-    border_width: int = 1
+    # Default value guarantees that agents don't see beyond the outer walls.
+    # Usually shouldn't be changed.
+    border_width: int = 5
 
     def __post_init__(self):
         super().__init__()

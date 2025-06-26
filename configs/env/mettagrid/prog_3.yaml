@@ -5,12 +5,12 @@ defaults:
 game:
   num_agents: 24
   map_builder:
-    _target_: mettagrid.room.multi_room.MultiRoom
+    _target_: metta.mettagrid.room.multi_room.MultiRoom
     num_rooms: ${div:${..num_agents},6}
     border_width: 1
 
     room:
-      _target_: mettagrid.room.random.Random
+      _target_: metta.mettagrid.room.random.Random
       width: ${sampling:10,100,17}
       height: ${sampling:10,100,17}
       border_width: 0
@@ -18,8 +18,8 @@ game:
       agents: 6
 
       objects:
-        mine: ${sampling:1,10,10}
-        generator: ${sampling:1,10,10}
+        mine_red: ${sampling:1,10,10}
+        generator_red: ${sampling:1,10,10}
         altar: ${sampling:1,5,7}
         armory: ${sampling:0,5,1}
         lasery: ${sampling:0,5,1}
