@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "mettagrid_c.hpp"
+#include "objects/agent.hpp"
+#include "objects/converter.hpp"
+#include "objects/wall.hpp"
 
 namespace py = pybind11;
 
@@ -33,76 +36,68 @@ py::dict CreateBenchmarkConfig(int num_agents) {
   game_cfg["obs_height"] = 11;
   game_cfg["num_observation_tokens"] = 100;
 
+  // Import mettagrid_c module to get Python configuration classes
+  py::module_ mettagrid_c = py::module_::import("metta.mettagrid.mettagrid_c");
+
   // Inventory item names configuration
   py::list inventory_item_names;
   inventory_item_names.append("ore");
   inventory_item_names.append("heart");
-  inventory_item_names.append("armor");
-  inventory_item_names.append("laser");
   game_cfg["inventory_item_names"] = inventory_item_names;
 
   // Actions configuration
+  py::object ActionConfig = mettagrid_c.attr("ActionConfig");
+  py::object AttackActionConfig = mettagrid_c.attr("AttackActionConfig");
+
   py::dict actions_cfg;
-  py::dict noop_cfg, move_cfg, rotate_cfg, attack_cfg, swap_cfg, put_cfg, get_cfg, change_color_cfg;
+  py::object action_cfg = ActionConfig(true, py::dict(), py::dict());
+  py::object attack_cfg = AttackActionConfig(true, py::dict(), py::dict(), py::dict());  // NOLINT(readability/fn_size)
 
-  noop_cfg["enabled"] = true;
-  move_cfg["enabled"] = true;
-  rotate_cfg["enabled"] = true;
-  attack_cfg["enabled"] = true;
-  swap_cfg["enabled"] = true;
-  put_cfg["enabled"] = true;
-  get_cfg["enabled"] = true;
-  change_color_cfg["enabled"] = true;
-
-  actions_cfg["noop"] = noop_cfg;
-  actions_cfg["move"] = move_cfg;
-  actions_cfg["rotate"] = rotate_cfg;
+  actions_cfg["noop"] = action_cfg;
+  actions_cfg["move"] = action_cfg;
+  actions_cfg["rotate"] = action_cfg;
   actions_cfg["attack"] = attack_cfg;
-  actions_cfg["swap"] = swap_cfg;
-  actions_cfg["put_items"] = put_cfg;
-  actions_cfg["get_items"] = get_cfg;
-  actions_cfg["change_color"] = change_color_cfg;
-  actions_cfg["armor_item_id"] = 2;
-  actions_cfg["laser_item_id"] = 3;
+  actions_cfg["swap"] = action_cfg;
+  actions_cfg["put_items"] = action_cfg;
+  actions_cfg["get_items"] = action_cfg;
+  actions_cfg["change_color"] = action_cfg;
 
   game_cfg["actions"] = actions_cfg;
 
-  // Groups configuration
-  py::dict agent_groups;
-  py::dict agent_group1, agent_group2;
+  // Create Python AgentConfig objects
+  py::object AgentConfig = mettagrid_c.attr("AgentConfig");
+  py::object WallConfig = mettagrid_c.attr("WallConfig");
 
-  agent_group1["freeze_duration"] = 0;
-  agent_group1["action_failure_penalty"] = 0;
-  agent_group1["max_items_per_type"] = py::dict();
-  agent_group1["resource_rewards"] = py::dict();
-  agent_group1["resource_reward_max"] = py::dict();
-  agent_group1["group_name"] = "team1";
-  agent_group1["group_id"] = 0;
-  agent_group1["group_reward_pct"] = 0.0f;
+  py::object agent_cfg1 = AgentConfig(0,           // type_id
+                                      "agent",     // type_name
+                                      0,           // group_id
+                                      "team1",     // group_name
+                                      0,           // freeze_duration
+                                      0.0f,        // action_failure_penalty
+                                      py::dict(),  // max_items_per_type
+                                      py::dict(),  // resource_rewards
+                                      py::dict(),  // resource_reward_max
+                                      0.0f);       // group_reward_pct
 
-  agent_group2["freeze_duration"] = 0;
-  agent_group2["action_failure_penalty"] = 0;
-  agent_group2["max_items_per_type"] = py::dict();
-  agent_group2["resource_rewards"] = py::dict();
-  agent_group2["resource_reward_max"] = py::dict();
-  agent_group2["group_name"] = "team2";
-  agent_group2["group_id"] = 1;
-  agent_group2["group_reward_pct"] = 0.0f;
-
-  agent_groups["agent.team1"] = agent_group1;
-  agent_groups["agent.team2"] = agent_group2;
-
-  game_cfg["agent_groups"] = agent_groups;
+  py::object agent_cfg2 = AgentConfig(0,           // type_id
+                                      "agent",     // type_name
+                                      1,           // group_id
+                                      "team2",     // group_name
+                                      0,           // freeze_duration
+                                      0.0f,        // action_failure_penalty
+                                      py::dict(),  // max_items_per_type
+                                      py::dict(),  // resource_rewards
+                                      py::dict(),  // resource_reward_max
+                                      0.0f);       // group_reward_pct
 
   // Objects configuration
   py::dict objects_cfg;
-  py::dict wall_cfg, block_cfg, mine_cfg, generator_cfg, altar_cfg;
+
+  py::object wall_cfg = WallConfig(1, "wall", false);
 
   objects_cfg["wall"] = wall_cfg;
-  objects_cfg["block"] = block_cfg;
-  objects_cfg["mine_red"] = mine_cfg;
-  objects_cfg["generator_red"] = generator_cfg;
-  objects_cfg["altar"] = altar_cfg;
+  objects_cfg["agent.team1"] = agent_cfg1;
+  objects_cfg["agent.team2"] = agent_cfg2;
 
   game_cfg["objects"] = objects_cfg;
 
@@ -203,7 +198,7 @@ static void BM_MettaGridStep(benchmark::State& state) {  // NOLINT(runtime/refer
   auto cfg = CreateBenchmarkConfig(num_agents);
   auto map = CreateDefaultMap(2);
 
-  auto env = std::make_unique<MettaGrid>(cfg, map);
+  auto env = std::make_unique<MettaGrid>(cfg, map, 42);
   env->reset();
 
   // Verify agent count

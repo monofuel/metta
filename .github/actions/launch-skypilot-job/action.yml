@@ -25,14 +25,15 @@ inputs:
   skypilot_api_url:
     description: "SkyPilot API URL"
     required: true
+  observatory_token:
+    description: "Observatory API token"
+    required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Setup Python and uv
+    - name: Setup uv
       uses: ./.github/actions/setup-uv
-      with:
-        include-dev: true
 
     - name: Determine Git Ref
       id: determine_git_ref
@@ -58,6 +59,13 @@ runs:
       env:
         WANDB_API_KEY: ${{ inputs.wandb_api_key }}
 
+    - name: Set up Metta observatory
+      shell: bash
+      run: |
+        mkdir -p $HOME/.metta
+        echo "${{ inputs.observatory_token }}" > $HOME/.metta/observatory_token
+        echo "Created ~/.metta directory with observatory token for SkyPilot file mount"
+
     - name: Configure SkyPilot API server
       shell: bash
       run: |
@@ -75,7 +83,7 @@ runs:
         chmod +x ./devops/skypilot/launch.py
 
         LAUNCH_ARGS=(
-          "--timeout-hours=${{ inputs.timeout_hours }}"
+          "--max-runtime-hours=${{ inputs.timeout_hours }}"
         )
 
         if [ -n "${{ inputs.num_gpus }}" ]; then

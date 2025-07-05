@@ -8,12 +8,12 @@ game:
   num_observation_tokens: 100
 
   inventory_item_names:
-    - ore.red
-    - ore.blue
-    - ore.green
-    - battery.red
-    - battery.blue
-    - battery.green
+    - ore_red
+    - ore_blue
+    - ore_green
+    - battery_red
+    - battery_blue
+    - battery_green
     - heart
     - armor
     - laser
@@ -57,15 +57,15 @@ game:
     rewards:
       # action_failure_penalty: 0.00001
       action_failure_penalty: 0
-      ore.red: 0.005
-      ore.blue: 0.005
-      ore.green: 0.005
-      battery.red: 0.01
-      battery.blue: 0.01
-      battery.green: 0.01
-      battery.red_max: 5
-      battery.blue_max: 5
-      battery.green_max: 5
+      ore_red: 0.005
+      ore_blue: 0.005
+      ore_green: 0.005
+      battery_red: 0.01
+      battery_blue: 0.01
+      battery_green: 0.01
+      battery_red_max: 5
+      battery_blue_max: 5
+      battery_green_max: 5
       heart: 1
       heart_max: 1000
 
@@ -109,14 +109,10 @@ game:
       sprite: 6
       props: {}
 
-  diversity_bonus:
-    enabled: false
-    similarity_coef: 0.5
-    diversity_coef: 0.5
-
   objects:
     altar:
-      input_battery.red: 3
+      type_id: 8
+      input_battery_red: 3
       output_heart: 1
       max_output: 5
       conversion_ticks: 1
@@ -124,7 +120,8 @@ game:
       initial_items: 1
 
     mine_red:
-      output_ore.red: 1
+      type_id: 2
+      output_ore_red: 1
       color: 0
       max_output: 5
       conversion_ticks: 1
@@ -132,15 +129,17 @@ game:
       initial_items: 1
 
     mine_blue:
+      type_id: 3
       color: 1
-      output_ore.blue: 1
+      output_ore_blue: 1
       max_output: 5
       conversion_ticks: 1
       cooldown: 50
       initial_items: 1
 
     mine_green:
-      output_ore.green: 1
+      type_id: 4
+      output_ore_green: 1
       color: 2
       max_output: 5
       conversion_ticks: 1
@@ -148,8 +147,9 @@ game:
       initial_items: 1
 
     generator_red:
-      input_ore.red: 1
-      output_battery.red: 1
+      type_id: 5
+      input_ore_red: 1
+      output_battery_red: 1
       color: 0
       max_output: 5
       conversion_ticks: 1
@@ -157,8 +157,9 @@ game:
       initial_items: 1
 
     generator_blue:
-      input_ore.blue: 1
-      output_battery.blue: 1
+      type_id: 6
+      input_ore_blue: 1
+      output_battery_blue: 1
       color: 1
       max_output: 5
       conversion_ticks: 1
@@ -166,8 +167,9 @@ game:
       initial_items: 1
 
     generator_green:
-      input_ore.green: 1
-      output_battery.green: 1
+      type_id: 7
+      input_ore_green: 1
+      output_battery_green: 1
       color: 2
       max_output: 5
       conversion_ticks: 1
@@ -175,7 +177,8 @@ game:
       initial_items: 1
 
     armory:
-      input_ore.red: 3
+      type_id: 9
+      input_ore_red: 3
       output_armor: 1
       max_output: 5
       conversion_ticks: 1
@@ -183,8 +186,9 @@ game:
       initial_items: 1
 
     lasery:
-      input_ore.red: 1
-      input_battery.red: 2
+      type_id: 10
+      input_ore_red: 1
+      input_battery_red: 2
       output_laser: 1
       max_output: 5
       conversion_ticks: 1
@@ -192,8 +196,9 @@ game:
       initial_items: 1
 
     lab:
-      input_ore.red: 3
-      input_battery.red: 3
+      type_id: 11
+      input_ore_red: 3
+      input_battery_red: 3
       output_blueprint: 1
       max_output: 5
       conversion_ticks: 1
@@ -201,9 +206,10 @@ game:
       initial_items: 1
 
     factory:
+      type_id: 12
       input_blueprint: 1
-      input_ore.red: 5
-      input_battery.red: 5
+      input_ore_red: 5
+      input_battery_red: 5
       output_armor: 5
       output_laser: 5
       max_output: 5
@@ -212,6 +218,7 @@ game:
       initial_items: 1
 
     temple:
+      type_id: 13
       input_heart: 1
       input_blueprint: 1
       output_heart: 5
@@ -221,9 +228,11 @@ game:
       initial_items: 1
 
     wall:
+      type_id: 1
       swappable: false
 
     block:
+      type_id: 14
       swappable: true
 
   actions:
@@ -239,18 +248,11 @@ game:
       enabled: true
     attack:
       enabled: true
+      consumed_resources:
+        laser: 1
+      defense_resources:
+        armor: 1
     swap:
       enabled: true
     change_color:
       enabled: true
-
-  reward_sharing:
-    groups:
-      team_1:
-        team_1: 0.5
-      team_2:
-        team_2: 0.5
-      team_3:
-        team_3: 0.5
-      team_4:
-        team_4: 0.5

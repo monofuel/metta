@@ -139,6 +139,13 @@ async function loadReplayText(url: string, replayData: string) {
 // adding missing keys, recomputing invalid values, etc.
 // It also creates some internal data structures for faster access to images.
 function fixReplay() {
+  // Fix "agent.agent" -> "agent".
+  for (let i = 0; i < state.replay.object_types.length; i++) {
+    if (state.replay.object_types[i] == 'agent.agent') {
+      state.replay.object_types[i] = 'agent'
+    }
+  }
+
   // Create action image mappings for faster access.
   state.replay.action_images = []
   for (const actionName of state.replay.action_names) {
@@ -164,7 +171,14 @@ function fixReplay() {
   // Example: 1 -> ["objects/unknown.png", "objects/unknown.item.png", "objects/unknown.color.png"]
   state.replay.object_images = []
   for (let i = 0; i < state.replay.object_types.length; i++) {
-    const typeName = state.replay.object_types[i]
+    let typeName = state.replay.object_types[i]
+    // Remove known color suffixes.
+    for (const color of Common.COLORS) {
+      if (typeName.endsWith('_' + color[0])) {
+        typeName = typeName.slice(0, -color[0].length - 1)
+        break
+      }
+    }
     var image = 'objects/' + typeName + '.png'
     var imageItem = 'objects/' + typeName + '.item.png'
     var imageColor = 'objects/' + typeName + '.color.png'
@@ -323,6 +337,15 @@ export function loadReplayStep(replayStep: any) {
   requestFrame()
 }
 
+/** Get object config. */
+export function getObjectConfig(object: any) {
+  let typeName = state.replay.object_types[object.type]
+  if (state.replay.config == null) {
+    return null
+  }
+  return state.replay.config.game.objects[typeName]
+}
+
 /** Initializes the WebSocket connection. */
 export function initWebSocket(wsUrl: string) {
   state.ws = new WebSocket(wsUrl)
@@ -374,5 +397,33 @@ export function sendAction(actionName: string, actionParam: number) {
     )
   } else {
     console.error('No selected grid object')
+  }
+}
+
+/**
+ * Capitalize the first letter of every word in a string.
+ * Example: "hello world" -> "Hello World"
+ */
+function capitalize(str: string) {
+  return str
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+/** Gets a nice english name of a resource, type or any other property. */
+export function propertyName(key: string) {
+  return capitalize(key.replace('inv:', '').replace('agent:', '').replace('.', ' ').replace('_', ' '))
+}
+
+/** Gets the icon of a resource, type or any other property. */
+export function propertyIcon(key: string) {
+  if (state.replay.object_types.includes(key)) {
+    let idx = state.replay.object_types.indexOf(key)
+    return "data/atlas/" + state.replay.object_images[idx][0]
+  } else if (key.startsWith('inv:') || key.startsWith('agent:inv:')) {
+    return 'data/atlas/resources/' + key.replace('inv:', '').replace('agent:', '') + '.png'
+  } else {
+    return 'data/ui/table/' + key.replace('agent:', '') + '.png'
   }
 }

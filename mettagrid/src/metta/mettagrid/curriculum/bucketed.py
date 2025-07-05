@@ -4,9 +4,10 @@ import logging
 from itertools import product
 from typing import Any, Dict, List, Optional, Tuple
 
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 from tqdm import tqdm
 
+from metta.common.util.config import copy_omegaconf_config
 from metta.mettagrid.curriculum.core import Curriculum
 from metta.mettagrid.curriculum.sampling import SampledTaskCurriculum
 from metta.mettagrid.curriculum.util import config_from_path
@@ -29,7 +30,7 @@ class BucketedCurriculum(LowRewardCurriculum):
 
         self._id_to_curriculum = {}
         base_cfg = config_from_path(env_cfg_template, env_overrides)
-        env_cfg_template = OmegaConf.create(OmegaConf.to_container(base_cfg, resolve=False))
+        env_cfg_template = copy_omegaconf_config(base_cfg)
 
         logger.info("Generating bucketed tasks")
         for parameter_values in tqdm(product(*expanded_buckets.values())):
@@ -49,6 +50,10 @@ def get_id(parameters, values):
     for k, v in zip(parameters, values, strict=False):
         if isinstance(v, dict):
             v = v.get("range", "values")
+        if isinstance(v, tuple):
+            v = tuple(round(x, 3) if isinstance(x, float) else x for x in v)
+        elif isinstance(v, float):
+            v = round(v, 3)
         curriculum_id += f"{'.'.join(k.split('.')[-3:])}={v};"
     return curriculum_id
 
