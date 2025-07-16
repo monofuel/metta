@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-python.url = "github:cachix/nixpkgs-python";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   nixConfig = {
@@ -16,18 +15,14 @@
     ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-python, nixpkgs-unstable, ... }:
+  outputs = { self, nixpkgs, nixpkgs-python, ... }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
-      pkgs-unstable = import nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      mettaPython = nixpkgs-python.packages.${system}."3.11.12";
+      mettaPython = nixpkgs-python.packages.${system}."3.11.7";
     in
     {
       devShells.${system}.default = pkgs.mkShell {
@@ -35,9 +30,8 @@
 
         buildInputs = with pkgs; [
           mettaPython
-          pkgs-unstable.uv # had issues with torch/rocm failing to extract on older uv
+          uv
           cmake
-          zstd
           stdenv.cc.cc.lib
           nodejs_22
           typescript
@@ -49,15 +43,11 @@
           # Clear PYTHONPATH to avoid conflicts
           export PYTHONPATH=""
 
-          # Pytorch gets unhappy with my radeon pro w7500 or radeon 780m
-          export HSA_OVERRIDE_GFX_VERSION=11.0.0
-
           # Set LD_LIBRARY_PATH for cmake to run properly during uv sync
           export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH"
-          export LD_LIBRARY_PATH=${pkgs.zstd.out}/lib:$LD_LIBRARY_PATH
 
           # Create and activate a virtual environment with uv
-          uv sync --index-strategy unsafe-best-match
+          uv sync
           source .venv/bin/activate
 
           # Build frontend
